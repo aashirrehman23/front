@@ -3,7 +3,7 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import Navbar from "./components/Header";
 const Layout = () => {
   const location = useLocation();
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   useEffect(() => {
     if (!token && !["/sign-in", "/sign-up"].includes(location.pathname)) {
       window.location.href = "/sign-in";
@@ -12,7 +12,6 @@ const Layout = () => {
   return (
     <>
       {token && <Navbar />}
-      
       <Outlet />
     </>
   );

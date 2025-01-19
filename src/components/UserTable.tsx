@@ -1,96 +1,34 @@
 import { useState } from "react";
-import AlertDialogSlide from "./Modal";
 
+import { blogsData } from "../constants/dummyData";
+import { MdDelete } from "react-icons/md";
+import { MdModeEdit } from "react-icons/md";
+import ModalBlog from "./ModalBlog";
+
+interface blogsData {
+  _id: number;
+  name: string;
+  title: string;
+  tags: string[];
+}
 const UserTable = () => {
   const [open, setOpen] = useState(false);
-  const [newBlog, setNewBlog] = useState("");
-  const users = [
-    { id: 1, name: "Neil Sims", title: "Lorem ipsum dolor sit amet." },
-    { id: 2, name: "Bonnie Green", title: "Consectetur adipiscing elit." },
-    { id: 3, name: "Jese Leos", title: "Sed do eiusmod tempor incididunt." },
-    { id: 4, name: "Thomas Lean", title: "Ut labore et dolore magna aliqua." },
-    {
-      id: 5,
-      name: "Leslie Livingston",
-      title: "Duis aute irure dolor in reprehenderit.",
-    },
-    {
-      id: 6,
-      name: "Sophia White",
-      title: "Excepteur sint occaecat cupidatat non proident.",
-    },
-    {
-      id: 7,
-      name: "Daniel Brown",
-      title: "Nemo enim ipsam voluptatem quia voluptas.",
-    },
-    {
-      id: 8,
-      name: "Emma Johnson",
-      title: "Quis autem vel eum iure reprehenderit.",
-    },
-    {
-      id: 9,
-      name: "Olivia Clark",
-      title: "Eum fugiat quo voluptas nulla pariatur.",
-    },
-    { id: 10, name: "William Turner", title: "At vero eos et accusamus." },
-    {
-      id: 11,
-      name: "James Carter",
-      title: "Et harum quidem rerum facilis est et expedita.",
-    },
-    {
-      id: 12,
-      name: "Lucas Moore",
-      title: "Nam libero tempore, cum soluta nobis est eligendi.",
-    },
-    {
-      id: 13,
-      name: "Mason Hall",
-      title: "Optio cumque nihil impedit quo minus id quod.",
-    },
-    { id: 14, name: "Ella Scott", title: "Omnis voluptas assumenda est." },
-    {
-      id: 15,
-      name: "Ava Lewis",
-      title: "Dolorem eum fugiat quo voluptas nulla.",
-    },
-    {
-      id: 16,
-      name: "Harper King",
-      title: "Temporibus autem quibusdam et aut officiis.",
-    },
-    {
-      id: 17,
-      name: "Evelyn Adams",
-      title: "Itaque earum rerum hic tenetur a sapiente.",
-    },
-    {
-      id: 18,
-      name: "Liam Nelson",
-      title: "Fugit, sed quia consequuntur magni dolores eos.",
-    },
-    {
-      id: 19,
-      name: "Henry Brooks",
-      title: "Neque porro quisquam est, qui dolorem ipsum quia.",
-    },
-    {
-      id: 20,
-      name: "Chloe Roberts",
-      title: "Sed ut perspiciatis unde omnis iste natus.",
-    },
-  ];
-  const handleAddBlog = () => {
-    setOpen(false);
+  const [blogId, setBlogId] = useState("");
+  // const [newBlog, setNewBlog] = useState("");
+  // const [value, setValue] = useState([]);
+  // const [tags, setTags] = useState([]);
+  const handleModal = (id?: string) => {
+    setOpen(true);
+    if (id) return setBlogId(id);
   };
+  console.log(blogId, "blo");
+  const handleDelete = (id: string) => {};
   return (
     <div className="relative overflow-x-auto m-10 ">
       <div className="flex items-end flex-col  flex-wrap md:flex-nowrap space-y-4 md:space-y-0  pb-4">
         <div
-          onClick={() => setOpen(true)}
-          className="text-lg px-5 py-2 !rounded-lg font-semibold cursor-pointer  border border-white text-white bg-black "
+          onClick={() => handleModal()}
+          className="text-lg px-5 py-2 !rounded-lg font-semibold cursor-pointer  border border-white text-white bg-black active:scale-[0.97]"
         >
           Add Blog
         </div>
@@ -100,46 +38,49 @@ const UserTable = () => {
         <div className=" w-full p-4">
           <h1 className="text-3xl font-bold  mb-6">Blog List</h1>
 
-          <div className="space-y-4 flex gap-5 flex-wrap ">
-            {users.map((blog, index) => (
+          <div className="md:columns-3 sm:columns-2 columns-1 gap-4">
+            {blogsData.map((blog: blogsData, index: number) => (
               <div
                 key={index}
-                className="flex justify-between items-center p-4 border  bg-white rounded-lg shadow-lg"
+                className="mb-4 break-inside-avoid p-4 border group bg-white rounded-lg shadow-md hover:scale-[0.97] transition-transform duration-300 ease-in-out gap-4 "
               >
-                <div>
+                <div className="flex justify-between items-center">
                   <h2 className="text-lg font-semibold">{blog.name}</h2>
-                  <p className="text-gray-600">{blog.title} </p>
+                  <div className="flex gap-2 transition duration-300 ease-in-out opacity-0 group-hover:opacity-100">
+                    <MdModeEdit
+                      className="cursor-pointer active:scale-95"
+                      size={20}
+                      onClick={() => handleModal(String(blog?._id))}
+                    />
+                    <MdDelete
+                      size={20}
+                      className="cursor-pointer active:scale-95 "
+                      onClick={() => handleDelete(String(blog?._id))}
+                    />
+                  </div>
+                </div>
+                <p className="text-gray-600">{blog.title}</p>
+                <div className="flex gap-2 mt-2">
+                  {blog?.tags?.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="inline-block bg-green-100 text-green-800 border border-green-800 text-xs px-2 py-1 rounded-md"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
             ))}
           </div>
         </div>
       </div>
-      <AlertDialogSlide headerTitle="Add Blog" open={open} setOpen={setOpen}>
-        <div>
-          <label
-            htmlFor="email"
-            className="block mb-2 text-sm font-bold text-black "
-          >
-            Your blog
-          </label>
-          <textarea
-            name="newBlog"
-            id="newBlog"
-            className="bg-gray-50 border h-52  border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-80 p-2.5"
-            placeholder="Start typing here..."
-            value={newBlog}
-            onChange={(e) => setNewBlog(e.target.value)}
-            required
-          />
-        </div>
-        <button
-          onClick={handleAddBlog}
-          className="mt-4  text-white bg-black hover:bg-black active:scale-95 focus:outline-none focus:ring-0 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-        >
-          Add
-        </button>
-      </AlertDialogSlide>
+      <ModalBlog
+        id={blogId}
+        setBlogId={setBlogId}
+        open={open}
+        setOpen={setOpen}
+      />
     </div>
   );
 };

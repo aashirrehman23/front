@@ -22,7 +22,7 @@ const Navbar = () => {
 
             <div
               onClick={() => {
-                localStorage.removeItem("token");
+                sessionStorage.removeItem("token");
                 window.location.href = "/sign-in";
               }}
               className="block  py-2 px-4 text-sm bg-white rounded-sm font-semibold hover:bg-gray-100 cursor-pointer active:scale-95"

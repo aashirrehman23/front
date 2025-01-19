@@ -8,7 +8,7 @@ const SignIn = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    localStorage.setItem("token", password);
+    sessionStorage.setItem("token", password);
     const apiEndpoint = "https://example.com/api/signin";
     navigate("/", { replace: true });
 
