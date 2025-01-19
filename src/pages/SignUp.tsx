@@ -1,48 +1,60 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
 
 const SignUp = () => {
-  const [name, setName] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // Formik and Yup validation schema
+  const validationSchema = Yup.object({
+    name: Yup.string()
+      .min(2, "Name must be at least 2 characters long")
+      .required("Name is required"),
+    email: Yup.string()
+      .email("Please provide a valid email address")
+      .required("Email is required"),
+    password: Yup.string()
+      .min(8, "Password must be at least 8 characters long")
+      .required("Password is required"),
+  });
 
-    // Replace with your API endpoint
-    const apiEndpoint = 'https://example.com/api/signup';
-
-    try {
-      const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to sign up');
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      const apiEndpoint = "http://localhost:3000/register";
+      try {
+        const response = await axios.post(apiEndpoint, values);
+        console.log("Sign-up successful:", response.data);
+        navigate("/sign-in", { replace: true });
+      } catch (error: any) {
+        if (error.response) {
+          console.error("Sign-up error:", error.response.data);
+        } else {
+          console.error("Sign-up error:", error.message);
+        }
       }
-
-      const data = await response.json();
-      console.log('Sign-up successful:', data);
-      // Handle successful sign-up (e.g., redirect to login or dashboard)
-    } catch (error) {
-      console.error('Sign-up error:', error);
-      // Handle sign-up error (e.g., show error message)
-    }
-  };
+    },
+  });
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900">
+    <section className="bg-gray-50 dark:bg-black h-[100dvh]">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+        <div className="w-full rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Create your account
             </h1>
-            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
+            <form
+              className="space-y-4 md:space-y-6"
+              onSubmit={formik.handleSubmit}
+            >
               <div>
                 <label
                   htmlFor="name"
@@ -54,12 +66,17 @@ const SignUp = () => {
                   type="text"
                   name="name"
                   id="name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-transparent border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="John Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                 />
+                {formik.touched.name && formik.errors.name ? (
+                  <p className="text-red-500 mt-1 text-sm">
+                    {formik.errors.name}
+                  </p>
+                ) : null}
               </div>
               <div>
                 <label
@@ -72,12 +89,17 @@ const SignUp = () => {
                   type="email"
                   name="email"
                   id="email"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-transparent border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="xyz@company.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                 />
+                {formik.touched.email && formik.errors.email ? (
+                  <p className="text-red-500 mt-1 text-sm">
+                    {formik.errors.email}
+                  </p>
+                ) : null}
               </div>
               <div>
                 <label
@@ -91,22 +113,28 @@ const SignUp = () => {
                   name="password"
                   id="password"
                   placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                  className="bg-transparent border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                 />
+                {formik.touched.password && formik.errors.password ? (
+                  <p className="text-red-500 mt-1  text-sm">
+                    {formik.errors.password}
+                  </p>
+                ) : null}
               </div>
               <button
+                disabled={!formik.isValid}
                 type="submit"
                 className="w-full text-white bg-primary-600 border border-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
                 Sign up
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Already have an account?{' '}
+                Already have an account?{" "}
                 <Link
-                  to={'/sign-in'}
+                  to={"/sign-in"}
                   className="underline font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >
                   Sign in

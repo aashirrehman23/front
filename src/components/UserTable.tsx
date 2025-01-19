@@ -5,7 +5,7 @@ import { MdDelete } from "react-icons/md";
 import { MdModeEdit } from "react-icons/md";
 import ModalBlog from "./ModalBlog";
 
-interface blogsData {
+interface blogData {
   _id: number;
   name: string;
   title: string;
@@ -21,10 +21,9 @@ const UserTable = () => {
     setOpen(true);
     if (id) return setBlogId(id);
   };
-  console.log(blogId, "blo");
   const handleDelete = (id: string) => {};
   return (
-    <div className="relative overflow-x-auto m-10 ">
+    <div className=" overflow-x-auto m-4 md:m-10 sm:m-7 ">
       <div className="flex items-end flex-col  flex-wrap md:flex-nowrap space-y-4 md:space-y-0  pb-4">
         <div
           onClick={() => handleModal()}
@@ -35,11 +34,11 @@ const UserTable = () => {
       </div>
 
       <div className=" flex items-center ">
-        <div className=" w-full p-4">
-          <h1 className="text-3xl font-bold  mb-6">Blog List</h1>
+        <div className=" w-full py-4">
+          {/* <h1 className="text-3xl font-bold  mb-6">Blog List</h1> */}
 
           <div className="md:columns-3 sm:columns-2 columns-1 gap-4">
-            {blogsData.map((blog: blogsData, index: number) => (
+            {blogsData.map((blog: blogData, index: number) => (
               <div
                 key={index}
                 className="mb-4 break-inside-avoid p-4 border group bg-white rounded-lg shadow-md hover:scale-[0.97] transition-transform duration-300 ease-in-out gap-4 "
@@ -59,7 +58,7 @@ const UserTable = () => {
                     />
                   </div>
                 </div>
-                <p className="text-gray-600">{blog.title}</p>
+                <p className="text-gray-600 text-sm">{blog.title}</p>
                 <div className="flex gap-2 mt-2">
                   {blog?.tags?.map((tag, index) => (
                     <span
